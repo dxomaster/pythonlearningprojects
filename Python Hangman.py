@@ -154,7 +154,7 @@ with open('words.json' , 'r') as f:
 
 running = True
 while running:
-	time.sleep(0.5)
+	time.sleep(0.4)
 	game_set() 
 	while play:
 		time.sleep(1.5)
