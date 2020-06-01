@@ -2,14 +2,12 @@ import psutil
 import time
 import math
 import os
-import matplotlib.pyplot as plt  
-import ast
 import daemon
+import stats
 
 
-try:
-	daemon.daemon()
-except KeyboardInterrupt:
-	os.system('cls')
-	print("done monitoring.")
-time.sleep(5)
+daemon.start_daemon()
+data_sent = stats.data_extract('sent')
+data_recv = stats.data_extract('recv')
+stats.plot_bar(data_sent,data_recv)
+os.system('cls')
