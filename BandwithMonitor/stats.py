@@ -3,7 +3,13 @@ import time
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-def plot_bar(data_sent,data_recv):
+def plot_bar(data_sent,data_recv,measure_unit):
+	if measure_unit == 1:
+		unit = "Bytes"
+	elif measure_unit == 2:
+		unit = "MB"
+	else:
+		unit = "GB"
 	fig, ax = plt.subplots()
 	x = np.arange(len(data_sent))  # the label locations
 	width = 0.35
@@ -12,7 +18,7 @@ def plot_bar(data_sent,data_recv):
 	rects1 = ax.bar(x - width/2,values,width,label='Sent')
 	values = list(data_recv.values())
 	rects2 = ax.bar(x + width/2,values,width,label='Received')
-	ax.set_ylabel('Data (in MB)')
+	ax.set_ylabel('Data (in ' + unit + ')')
 	ax.set_title('Data usage by time')
 	ax.set_xticks(x)
 	ax.set_xticklabels(names)
