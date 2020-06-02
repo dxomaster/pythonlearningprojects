@@ -2,6 +2,7 @@ import psutil
 import time
 import math
 import os
+import os.path
 import daemon
 import stats
 ASCII_INTRO = """    ____                  __         _ __  __       __  ___            _ __            
@@ -16,6 +17,7 @@ print(ASCII_INTRO)
 time.sleep(1.6)
 while True:
 	os.system('cls')
+	print(ASCII_INTRO)
 	print("Menu:")
 	print("1.Start monitoring")
 	print("2.Help")
@@ -37,6 +39,7 @@ while True:
 		run = True
 	elif choice == 2:
 		os.system('cls')
+		print(ASCII_INTRO)
 		print("Help")
 		print("______")
 		print("""Bandwith monitor is an application which monitors your sent and recieved packets in timeouts of your choosing.
@@ -49,6 +52,7 @@ It will then show you the results in a graph using your desired units of measure
 	if run:
 		while True:
 			os.system('cls')
+			print(ASCII_INTRO)
 			try:
 				monitor_time = int(input("Please specify your monitor timing (time between each scan, in whole secondes!)"))
 				break
@@ -56,18 +60,19 @@ It will then show you the results in a graph using your desired units of measure
 				continue
 		while True:
 			os.system('cls')
+			print(ASCII_INTRO)
 			try:
 				print("Which unit of measurement would you like to use?")
 				print("1.byte")
-				print("2.MegaByte (MB)")
-				print("3.GigaByte (GB)")
+				print("2.KiloByte (KB)")
+				print("3.MegaByte (MB)")
+				print("4.GigaByte (GB)")
 				measure_unit = int(input())
-				if 1<=measure_unit<=3:	
+				if 1<=measure_unit<=4:	
 					break
 				else:
 					continue
 			except ValueError:
-				print("Invalid input. Try again please.")
 				continue
 		daemon.start_daemon(monitor_time,measure_unit)		
 		data_sent = stats.data_extract('sent')

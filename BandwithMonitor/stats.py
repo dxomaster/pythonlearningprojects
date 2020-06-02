@@ -7,6 +7,8 @@ def plot_bar(data_sent,data_recv,measure_unit):
 	if measure_unit == 1:
 		unit = "Bytes"
 	elif measure_unit == 2:
+		unit = "KB"
+	elif measure_unit == 3:
 		unit = "MB"
 	else:
 		unit = "GB"

@@ -15,9 +15,12 @@ def start_daemon(monitor_time,measure_unit): #runs the main daemon for monitorin
 		unit = "Bytes"
 	elif measure_unit == 2:
 		measure_convert = 1000
+		unit = "KB"
+	elif measure_unit == 3:
+		measure_convert = 1000000
 		unit = "MB"
-	else:
-		measure_convert = 1000000 
+	elif measure_unit == 4:
+		measure_convert = 1000000000 
 		unit = "GB"
 	first = True
 	old_sent = update().bytes_sent
