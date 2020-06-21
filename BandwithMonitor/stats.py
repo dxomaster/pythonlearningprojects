@@ -3,9 +3,10 @@ import time
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-
-
+from tkinter import *
+from main import *
 def plot_bar(data_sent, data_recv, measure_unit):
+
     if measure_unit == 1:
         unit = "Bytes"
     elif measure_unit == 2:
@@ -30,7 +31,9 @@ def plot_bar(data_sent, data_recv, measure_unit):
     auto_label(rects1, ax)
     auto_label(rects2, ax)
     fig.tight_layout()
+
     plt.show()
+    main_gui()
 
 
 def auto_label(rects, ax):
