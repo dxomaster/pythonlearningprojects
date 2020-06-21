@@ -127,7 +127,7 @@ def run_process(monitor_time, measure_unit, dynamic_monitor_label,load):
     while run:
         index += 1
         if not first:
-            time.sleep(monitor_time)
+            time.sleep(monitor_time) #TODO: fix issue where the daemon stops, but not writes anydata because it's stuck here.
         first = False
         value = update()
         recv = (float(value.bytes_recv) - old_recv) / measure_convert
