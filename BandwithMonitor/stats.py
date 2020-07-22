@@ -1,12 +1,9 @@
-import ast
-import time
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-from tkinter import *
-from main import *
-def plot_bar(data_sent, data_recv, measure_unit):
+import main
 
+
+def plot_bar(data_sent, data_recv, measure_unit):
     if measure_unit == 1:
         unit = "Bytes"
     elif measure_unit == 2:
@@ -16,13 +13,13 @@ def plot_bar(data_sent, data_recv, measure_unit):
     else:
         unit = "GB"
     fig, ax = plt.subplots()
-    x = np.arange(len(data_sent))  # the label locations
-    width = 0.35
     names = list(data_sent.keys())
+    x = np.arange(len(names))  # the label locations
+    width = 0.35
     values = list(data_sent.values())
-    rects1 = ax.bar(x - width / 2, values, width, label='Sent')
+    rects1 = ax.bar(x - width / 2, values, label='Sent', width=width)
     values = list(data_recv.values())
-    rects2 = ax.bar(x + width / 2, values, width, label='Received')
+    rects2 = ax.bar(x + width / 2, values, label='Received', width=width)
     ax.set_ylabel('Data (in ' + unit + ')')
     ax.set_title('Data usage by time')
     ax.set_xticks(x)
@@ -31,9 +28,8 @@ def plot_bar(data_sent, data_recv, measure_unit):
     auto_label(rects1, ax)
     auto_label(rects2, ax)
     fig.tight_layout()
-
     plt.show()
-    main_gui()
+    main.main_gui()
 
 
 def auto_label(rects, ax):
@@ -47,12 +43,24 @@ def auto_label(rects, ax):
                     ha='center', va='bottom')
 
 
-def data_extract(data_type):
+def data_extract(data_type, measure_unit):
+    dict = {}
     if data_type == "sent":
         f = open("data_sent.data", "r")
 
     else:
         f = open("data_recv.data", "r")
-    data_str = str(f.read())
-    data = ast.literal_eval(data_str)
-    return data
+    if measure_unit == 1:
+        measure_convert = 1
+    elif measure_unit == 2:
+        measure_convert = 1000
+    elif measure_unit == 3:
+        measure_convert = 1000000
+    else:
+        measure_convert = 1000000000
+    for line in f:
+        if line[0] != "#":
+            (val, key) = line.strip("\n").split("*")
+            val = float(val) / measure_convert
+            dict[key] = val
+    return dict
