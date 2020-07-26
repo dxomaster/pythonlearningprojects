@@ -43,8 +43,25 @@ def auto_label(rects, ax):
                     ha='center', va='bottom')
 
 
-def data_extract(data_type, measure_unit):
+def check_multiple(data_type):
+    dates_arr = []
+    if data_type == "sent":
+        f = open("data_sent.data", "r")
+
+    else:
+        f = open("data_recv.data", "r")
+    for line in f:
+        if line[0] == "#":
+            dates_arr.append(line.replace("#", ""))
+    return dates_arr
+
+
+def data_extract(data_type, measure_unit, date_str):
     dict = {}
+    if date_str is None:
+        extract = True
+    else:
+      extract = False
     if data_type == "sent":
         f = open("data_sent.data", "r")
 
@@ -59,8 +76,14 @@ def data_extract(data_type, measure_unit):
     else:
         measure_convert = 1000000000
     for line in f:
-        if line[0] != "#":
+        if line[0] == "#" and date_str is not None:
+            if line.replace("#", "") == date_str:
+                extract = True
+            else:
+                extract = False
+        if extract and line[0] != "#":
             (val, key) = line.strip("\n").split("*")
             val = float(val) / measure_convert
             dict[key] = val
+
     return dict

@@ -8,11 +8,13 @@ from resources.AnimatedGif import *
 
 
 def stop_running():
-    try:
-        os.remove("data_recv.data")
-        os.remove("data_sent.data")
-    except OSError:
-        pass
+    result = messagebox.askyesno("Data save", "Do you wish to clear your data?")
+    if result:
+        try:
+            os.remove("data_recv.data")
+            os.remove("data_sent.data")
+        except OSError:
+            pass
     sys.exit()
 
 
@@ -69,36 +71,54 @@ It will then show you the results in a bar graph with your desired units of meas
     help_app.mainloop()
 
 
-def data_handle(app, measure_unit=0):
-    if measure_unit == 0:
-        existing_data(app)
-    else:
+def run_extraction(measure_unit, app=None, date_str=None):
+    if isinstance(measure_unit, StringVar):
+        measure_unit = int(measure_unit.get())
+    if app is not None:
         app.destroy()
-        data_sent = stats.data_extract('sent', measure_unit)
-        data_recv = stats.data_extract('recv', measure_unit)
+    data_sent = stats.data_extract('sent', measure_unit, date_str)
+    data_recv = stats.data_extract('recv', measure_unit, date_str)
+    stats.plot_bar(data_sent, data_recv, measure_unit)
 
-        stats.plot_bar(data_sent, data_recv, measure_unit)
+
+def data_handle(app, measure_unit=0):
+    app.destroy()
+    date_arr = stats.check_multiple('sent')
+    date_choose_app = Tk()
+    date_chose = tk.StringVar(date_choose_app)
+    date_chose.set(date_arr[0])
+    date_list = tk.OptionMenu(date_choose_app, date_chose, *date_arr)
+    date_list.grid(column=1, row=2)
+    date_choose_label = Label(date_choose_app,
+                              text="Multiple recordings detected, please choose a date to load",
+                              font=("Arial", 10))
+    date_choose_label.grid(column=1, row=1)
+    if measure_unit == 0:
+        measure_unit = StringVar(date_choose_app, "2")
+        wizard_radio1 = Radiobutton(date_choose_app, variable=measure_unit, text="Bytes", value="1")
+        wizard_radio1.grid(column=1, row=3, )
+        wizard_radio2 = Radiobutton(date_choose_app, variable=measure_unit, text="KB", value="2")
+        wizard_radio2.grid(column=1, row=4, )
+        wizard_radio3 = Radiobutton(date_choose_app, variable=measure_unit, text="MB", value="3")
+        wizard_radio3.grid(column=1, row=5, )
+        wizard_radio4 = Radiobutton(date_choose_app, variable=measure_unit, text="GB", value="4")
+        wizard_radio4.grid(column=1, row=6)
+    confirm_button = Button(date_choose_app, text="Enter",
+                            command=lambda: run_extraction(measure_unit, date_choose_app,
+                                                           str(date_chose.get())))
+    confirm_button.grid(column=1, row=7)
+    date_choose_app.mainloop()
 
 
 def existing_data(app):
     f = open("data_recv.data", "r")
-    date = f.readline().replace("#", "")
+    date_arr = stats.check_multiple('sent')
+    date = ""
+    for item in date_arr:
+        date = date + "\n" + item
     result = messagebox.askyesno(None, "Existing data date: " + date + "\n Do you wish to continue?")
     if result:
-        app.destroy()
-        app_window = Tk()
-        measure_unit = StringVar(app_window, "2")
-        wizard_radio1 = Radiobutton(app_window, variable=measure_unit, text="Bytes", value="1")
-        wizard_radio1.grid(column=0, row=3, sticky=W)
-        wizard_radio2 = Radiobutton(app_window, variable=measure_unit, text="KB", value="2")
-        wizard_radio2.grid(column=0, row=4, sticky=W)
-        wizard_radio3 = Radiobutton(app_window, variable=measure_unit, text="MB", value="3")
-        wizard_radio3.grid(column=0, row=5, sticky=W)
-        wizard_radio4 = Radiobutton(app_window, variable=measure_unit, text="GB", value="4")
-        wizard_radio4.grid(column=0, row=6, sticky=W)
-        wizard_button = Button(app_window, text="Enter",
-                               command=lambda: data_handle(app_window, int(measure_unit.get())))
-        wizard_button.grid(column=0, row=7)
+        data_handle(app)
     else:
         pass
 
@@ -117,7 +137,7 @@ def main_gui():
     exit_button.grid(row=3, column=1)
     if os.path.isfile("data_sent.data"):
         old_data_button = Button(app_window, text="Use existing data", width=35, font=("Arial", 8),
-                                 command=lambda: data_handle(app_window, 0))
+                                 command=lambda: existing_data(app_window))
         old_data_button.grid(row=3, column=1)
         exit_button.grid(row=4, column=1)
     app_window.mainloop()
